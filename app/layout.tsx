@@ -7,6 +7,10 @@ import { Suspense } from "react"
 import { GlobalCursor } from "@/components/global-cursor"
 import { AnimationProvider } from "@/components/animation-provider"
 import { ScrollAnimations } from "@/components/scroll-animations"
+import { Header } from "@/components/header"
+import { AuthProvider } from "@/components/auth-provider"
+import { CursorGlowTracker } from "@/components/cursor-glow-tracker"
+import { AdvancedLoading } from "@/components/advanced-loading"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -26,12 +30,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <AnimationProvider>
-          <GlobalCursor />
-          <ScrollAnimations />
-          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
-          <Analytics />
-        </AnimationProvider>
+        <AuthProvider>
+          <AnimationProvider>
+            <CursorGlowTracker />
+            <GlobalCursor />
+            <ScrollAnimations />
+            <Header />
+            <Suspense fallback={<AdvancedLoading isLoading={true} />}>
+              {children}
+            </Suspense>
+            <Analytics />
+          </AnimationProvider>
+        </AuthProvider>
       </body>
     </html>
   )

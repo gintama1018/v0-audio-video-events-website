@@ -1,0 +1,86 @@
+{
+  "portfolioItems": [
+    {
+      "id": "1",
+      "title": "Royal Wedding Celebration",
+      "description": "A magnificent wedding celebration with premium audio-visual setup and professional lighting design",
+      "eventType": "WEDDING",
+      "location": "Mumbai, India",
+      "eventDate": "2024-03-15",
+      "images": [
+        "/portfolio/royal-wedding-1.jpg",
+        "/indian-wedding-mandap-with-professional-lighting.jpg",
+        "/luxury-indian-wedding-with-professional-lighting-s.jpg"
+      ],
+      "videos": [],
+      "featured": true,
+      "tags": ["Premium Wedding", "Professional Lighting", "Audio System", "Traditional"],
+      "createdAt": "2024-03-16"
+    },
+    {
+      "id": "2",
+      "title": "Corporate Product Launch",
+      "description": "Modern corporate event with LED screens, interactive displays and professional sound system",
+      "eventType": "CORPORATE",
+      "location": "Delhi, India",
+      "eventDate": "2024-02-20",
+      "images": [
+        "/portfolio/corporate-event-1.jpg",
+        "/modern-corporate-conference-with-led-screens-and-p.jpg",
+        "/tech-product-launch-event-with-modern-led-displays.jpg"
+      ],
+      "videos": [],
+      "featured": false,
+      "tags": ["Corporate", "LED Screens", "Product Launch", "Modern Tech"],
+      "createdAt": "2024-02-21"
+    },
+    {
+      "id": "3",
+      "title": "Birthday Party Celebration",
+      "description": "Colorful birthday celebration with traditional music and professional lighting setup",
+      "eventType": "BIRTHDAY",
+      "location": "Pune, India",
+      "eventDate": "2024-01-10",
+      "images": [
+        "/portfolio/birthday-party-1.jpg",
+        "/diwali-celebration-with-colorful-lights-and-decora.jpg"
+      ],
+      "videos": [],
+      "featured": false,
+      "tags": ["Birthday", "Traditional Music", "Colorful Lighting", "Family Event"],
+      "createdAt": "2024-01-11"
+    },
+    {
+      "id": "4",
+      "title": "Live Concert Event",
+      "description": "Professional concert setup with stage lighting and premium sound system",
+      "eventType": "CONCERT",
+      "location": "Bangalore, India",
+      "eventDate": "2024-04-05",
+      "images": [
+        "/portfolio/concert-1.jpg",
+        "/ganesh-chaturthi-celebration-with-traditional-musi.jpg"
+      ],
+      "videos": [],
+      "featured": true,
+      "tags": ["Concert", "Stage Lighting", "Professional Audio", "Live Performance"],
+      "createdAt": "2024-04-06"
+    },
+    {
+      "id": "5",
+      "title": "Holi Festival Celebration",
+      "description": "Vibrant Holi festival with colorful decorations and traditional music setup",
+      "eventType": "CULTURAL",
+      "location": "Jaipur, India",
+      "eventDate": "2024-03-25",
+      "images": [
+        "/portfolio/holi-festival-1.jpg",
+        "/diwali-celebration-with-colorful-lighting-and-trad.jpg"
+      ],
+      "videos": [],
+      "featured": false,
+      "tags": ["Holi", "Cultural Event", "Traditional", "Colorful Decorations"],
+      "createdAt": "2024-03-26"
+    }
+  ]
+}

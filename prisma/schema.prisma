@@ -1,0 +1,373 @@
+// Audio Video Events - Full Stack Application Schema
+// Comprehensive database schema for event management system
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// User Management
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String?
+  phone       String?
+  role        UserRole @default(CLIENT)
+  password    String
+  isVerified  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  bookings    Booking[]
+  testimonials Testimonial[]
+  inquiries   Inquiry[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  CLIENT
+  ADMIN
+  MANAGER
+}
+
+// Contact Inquiries
+model Inquiry {
+  id          String      @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  serviceType String
+  eventDate   DateTime?
+  message     String?
+  status      InquiryStatus @default(PENDING)
+  priority    Priority    @default(MEDIUM)
+  source      String?     // Where the inquiry came from
+  budget      Float?
+  guestCount  Int?
+  venue       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  userId      String?
+  user        User?       @relation(fields: [userId], references: [id])
+  followUps   FollowUp[]
+  
+  @@map("inquiries")
+}
+
+enum InquiryStatus {
+  PENDING
+  CONTACTED
+  QUOTED
+  CONVERTED
+  LOST
+  SPAM
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Follow-up tracking
+model FollowUp {
+  id        String   @id @default(cuid())
+  inquiryId String
+  note      String
+  nextDate  DateTime?
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  inquiry   Inquiry  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  
+  @@map("follow_ups")
+}
+
+// Event Bookings
+model Booking {
+  id            String        @id @default(cuid())
+  clientId      String
+  eventName     String
+  eventType     EventType
+  eventDate     DateTime
+  endDate       DateTime?
+  venue         String
+  address       String?
+  guestCount    Int
+  budget        Float
+  status        BookingStatus @default(CONFIRMED)
+  paymentStatus PaymentStatus @default(PENDING)
+  totalAmount   Float
+  paidAmount    Float         @default(0)
+  notes         String?
+  requirements  String?       // Special requirements
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  // Relations
+  client        User          @relation(fields: [clientId], references: [id])
+  services      BookingService[]
+  payments      Payment[]
+  timeline      EventTimeline[]
+  
+  @@map("bookings")
+}
+
+enum EventType {
+  WEDDING
+  CORPORATE
+  BIRTHDAY
+  ANNIVERSARY
+  CONFERENCE
+  CONCERT
+  FESTIVAL
+  PRIVATE_PARTY
+  CULTURAL
+  RELIGIOUS
+  OTHER
+}
+
+enum BookingStatus {
+  DRAFT
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  POSTPONED
+}
+
+enum PaymentStatus {
+  PENDING
+  PARTIAL
+  PAID
+  REFUNDED
+}
+
+// Services Management
+model Service {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  category    ServiceCategory
+  basePrice   Float
+  unit        String    // per day, per hour, per event
+  isActive    Boolean   @default(true)
+  features    String?   // JSON string of features array
+  images      String?   // JSON string of image URLs array
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  bookings    BookingService[]
+  
+  @@map("services")
+}
+
+enum ServiceCategory {
+  AUDIO
+  LIGHTING
+  VIDEO
+  PHOTOGRAPHY
+  LED_DISPLAYS
+  ENTERTAINMENT
+  DECORATION
+  CATERING
+  TRANSPORTATION
+  OTHER
+}
+
+// Booking-Service relationship (many-to-many with additional data)
+model BookingService {
+  id        String  @id @default(cuid())
+  bookingId String
+  serviceId String
+  quantity  Int     @default(1)
+  price     Float
+  notes     String?
+  
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  service   Service @relation(fields: [serviceId], references: [id])
+  
+  @@unique([bookingId, serviceId])
+  @@map("booking_services")
+}
+
+// Payment Tracking
+model Payment {
+  id            String        @id @default(cuid())
+  bookingId     String
+  amount        Float
+  paymentMethod PaymentMethod
+  transactionId String?
+  status        PaymentStatus @default(PENDING)
+  dueDate       DateTime?
+  paidDate      DateTime?
+  notes         String?
+  createdAt     DateTime      @default(now())
+  
+  booking       Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  @@map("payments")
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  UPI
+  CARD
+  CHEQUE
+  OTHER
+}
+
+// Event Timeline/Tasks
+model EventTimeline {
+  id          String    @id @default(cuid())
+  bookingId   String
+  title       String
+  description String?
+  dueDate     DateTime
+  completed   Boolean   @default(false)
+  assignedTo  String?   // Team member
+  priority    Priority  @default(MEDIUM)
+  createdAt   DateTime  @default(now())
+  
+  booking     Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  @@map("event_timeline")
+}
+
+// Portfolio Management
+model Portfolio {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  eventType   EventType
+  location    String?
+  eventDate   DateTime?
+  images      String?     // JSON string of image URLs array
+  videos      String?     // JSON string of video URLs array
+  featured    Boolean     @default(false)
+  isPublic    Boolean     @default(true)
+  tags        String?     // JSON string of SEO tags array
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  @@map("portfolio")
+}
+
+// Client Testimonials
+model Testimonial {
+  id        String   @id @default(cuid())
+  clientId  String
+  name      String   // Display name (might be different from user name)
+  rating    Int      // 1-5 stars
+  comment   String
+  eventType EventType?
+  isPublic  Boolean  @default(false) // Admin approval required
+  featured  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  client    User     @relation(fields: [clientId], references: [id])
+  
+  @@map("testimonials")
+}
+
+// Team Management
+model TeamMember {
+  id           String   @id @default(cuid())
+  name         String
+  role         String
+  email        String?  @unique
+  phone        String?
+  specialization String?
+  experience   String?  // Years of experience
+  bio          String?
+  image        String?  // Profile image URL
+  isActive     Boolean  @default(true)
+  joinDate     DateTime @default(now())
+  
+  @@map("team_members")
+}
+
+// Analytics & Metrics
+model Analytics {
+  id          String   @id @default(cuid())
+  date        DateTime @default(now())
+  pageViews   Int      @default(0)
+  inquiries   Int      @default(0)
+  bookings    Int      @default(0)
+  revenue     Float    @default(0)
+  source      String?  // Traffic source
+  
+  @@unique([date])
+  @@map("analytics")
+}
+
+// Equipment Inventory
+model Equipment {
+  id           String          @id @default(cuid())
+  name         String
+  category     ServiceCategory
+  model        String?
+  serialNumber String?         @unique
+  purchaseDate DateTime?
+  cost         Float?
+  status       EquipmentStatus @default(AVAILABLE)
+  condition    String?         // Good, Fair, Needs Repair
+  location     String?         // Storage location
+  notes        String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  
+  @@map("equipment")
+}
+
+enum EquipmentStatus {
+  AVAILABLE
+  IN_USE
+  MAINTENANCE
+  DAMAGED
+  RETIRED
+}
+
+// Email Templates
+model EmailTemplate {
+  id        String            @id @default(cuid())
+  name      String            @unique
+  subject   String
+  body      String            // HTML content
+  type      EmailTemplateType
+  isActive  Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  
+  @@map("email_templates")
+}
+
+enum EmailTemplateType {
+  INQUIRY_CONFIRMATION
+  BOOKING_CONFIRMATION
+  PAYMENT_REMINDER
+  EVENT_REMINDER
+  THANK_YOU
+  FOLLOW_UP
+}
+
+// System Settings
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+  type  String // string, number, boolean, json
+  
+  @@map("settings")
+}
